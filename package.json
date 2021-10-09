@@ -1,5 +1,5 @@
 {
-  "name": "electron-ga",
+  "name": "@flickerlist/electron-ga",
   "version": "1.0.6",
   "description": "Google Analytics client for Electron applications",
   "main": "lib/index.js",
@@ -49,10 +49,9 @@
     "testEnvironment": "node"
   },
   "peerDependencies": {
-    "electron": "^1.8.2"
+    "electron": ""
   },
   "devDependencies": {
-    "@types/electron": "^1.6.10",
     "@types/jest": "^21.1.8",
     "@types/node": "^8.10.4",
     "jest": "^21.2.1",
@@ -61,7 +60,7 @@
     "rollup-plugin-typescript2": "^0.8.4",
     "rollup-plugin-uglify": "^2.0.1",
     "ts-jest": "^21.2.4",
-    "typescript": "^2.8.1"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "node-machine-id": "^1.1.9",

@@ -4,6 +4,8 @@ export type Param<T> = T | ParamGetter<T>;
 
 export type InitParams = {
   protocolVersion?: Param<string>;
+  // url to report, default is 'https://www.google-analytics.com/batch'
+  reportUrl?: Param<string>;
   trackId?: Param<string>;
   clientId?: Param<string>;
   userId?: Param<string>;

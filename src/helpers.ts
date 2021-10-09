@@ -1,5 +1,5 @@
 import { stringify } from 'qs';
-import { InitParams, Param, Item } from './types';
+import { InitParams, Param, Item, ParamGetter } from './types';
 import { URL } from './consts';
 import {
   getAppName,
@@ -29,7 +29,7 @@ export const getDefaultInitParams = (): InitParams => {
   };
 };
 
-export const resolveParam = <T>(value: Param<T>): T => (typeof value === 'function' ? value() : value);
+export const resolveParam = <T>(value: Param<T>): T => (typeof value === 'function' ? (value as ParamGetter<T>)() : value);
 
 export const prepareItems = (items: Item[], trackId, time): Item[] =>
   items.map(item => ({ ...item, tid: trackId, qt: time - item.__timestamp }));
@@ -43,12 +43,12 @@ export const getBatches = (items: Item[], batchSize: number): Item[][] =>
     [ [] ]
   );
 
-export const sendBatches = async ([ batch, ...others ]: Item[][], failedItems: Item[] = []): Promise<Item[]> => {
+export const sendBatches = async (url: Param<string>, [ batch, ...others ]: Item[][], failedItems: Item[] = []): Promise<Item[]> => {
   if (!batch || batch.length === 0) return failedItems;
   try {
     await fetch(URL, { method: 'post', body: batch.map(item => stringify(item)).join('\n') });
-    return await sendBatches(others, failedItems);
+    return await sendBatches(url, others, failedItems);
   } catch (error) {
-    return await sendBatches(others, [ ...failedItems, ...batch ]);
+    return await sendBatches(url, others, [ ...failedItems, ...batch ]);
   }
 };

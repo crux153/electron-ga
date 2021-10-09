@@ -1,10 +1,11 @@
 import { InitParams, Item, Param } from './types';
 import { getDefaultInitParams, prepareItems, getBatches, sendBatches, resolveParam } from './helpers';
 import { getNow, getCache, setCache, retry } from './side-effects';
-import { BATCH_SIZE, RETRY } from './consts';
+import { BATCH_SIZE, RETRY, URL } from './consts';
 
 export class Analytics {
   private trackId: Param<string>;
+  private reportUrl?: Param<string>;
   private protocolVersion: Param<string>;
   private clientId: Param<string>;
   private userId: Param<string>;
@@ -29,7 +30,7 @@ export class Analytics {
     const items = prepareItems([ ...cache, params ].filter(_ => _), this.trackId, now);
     if (items.length === 0) return;
     const batches = getBatches(items, BATCH_SIZE);
-    const failedItems = await sendBatches(batches);
+    const failedItems = await sendBatches(this.reportUrl || URL, batches);
     setCache(failedItems);
   };
 
@@ -40,6 +41,7 @@ export class Analytics {
       v: resolveParam(this.protocolVersion),
       tid: resolveParam(this.trackId),
       cid: resolveParam(this.clientId),
+      uid: resolveParam(this.userId),
       an: resolveParam(this.appName),
       av: resolveParam(this.appVersion),
       ul: resolveParam(this.language),

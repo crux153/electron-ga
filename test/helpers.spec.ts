@@ -104,19 +104,19 @@ describe('helpers', () => {
 
   describe('sendBatches', () => {
     it('does not do anything at empty batches', async () => {
-      expect(await sendBatches([])).toEqual([]);
+      expect(await sendBatches(URL, [])).toEqual([]);
       expect(fetch.mock.calls.length).toEqual(0);
     });
 
     it('does not do anything at empty batch', async () => {
-      expect(await sendBatches([ [] ])).toEqual([]);
+      expect(await sendBatches(URL, [ [] ])).toEqual([]);
       expect(fetch.mock.calls.length).toEqual(0);
     });
 
     it('send all batches', async () => {
       fetch.mockReturnValue(Promise.resolve());
       expect(
-        await sendBatches([
+        await sendBatches(URL, [
           [ { __timestamp: 1, tid: '123', a: 1 }, { __timestamp: 2, tid: '123', a: 2 } ],
           [ { __timestamp: 3, tid: '123', a: 3 } ]
         ])
@@ -134,7 +134,7 @@ describe('helpers', () => {
       fetch.mockReturnValueOnce(Promise.reject(new Error()));
       fetch.mockReturnValueOnce(Promise.resolve());
       expect(
-        await sendBatches([
+        await sendBatches(URL, [
           [ { __timestamp: 1, tid: '123', a: 1 }, { __timestamp: 2, tid: '123', a: 2 } ],
           [ { __timestamp: 3, tid: '123', a: 3 } ]
         ])
