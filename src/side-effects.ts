@@ -1,11 +1,11 @@
-import { remote } from 'electron';
+import { app, screen } from '@electron/remote';
 import { machineIdSync } from 'node-machine-id';
 import { CACHE_KEY_NAME } from './consts';
 import { Item } from './types';
 
-export const getAppName = (): string => remote.app.getName();
+export const getAppName = (): string => app.getName();
 
-export const getAppVersion = (): string => remote.app.getVersion();
+export const getAppVersion = (): string => app.getVersion();
 
 export const getClientId = (): string => machineIdSync();
 
@@ -16,8 +16,8 @@ export const getUserAgent = (): string => window.navigator.userAgent;
 export const getViewport = (): string => `${window.innerWidth}x${window.innerHeight}`;
 
 export const getScreenResolution = (): string => {
-  const screen = remote.screen.getPrimaryDisplay();
-  return `${screen.size.width}x${screen.size.height}`;
+  const _screen = screen.getPrimaryDisplay();
+  return `${_screen.size.width}x${_screen.size.height}`;
 };
 
 export const getNow = (): number => Date.now();
