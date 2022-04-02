@@ -2,6 +2,7 @@ import 'jest';
 import Analytics from '../src/index';
 import { URL, RETRY } from '../src/consts';
 
+jest.mock("@electron/remote", () => jest.fn());
 jest.mock('../src/side-effects');
 const {
   getClientId,
