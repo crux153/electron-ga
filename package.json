@@ -14,7 +14,9 @@
     "build": "rimraf lib && tsc",
     "prettier": "prettier --write \"{src,test}/**/*.ts\"",
     "test": "jest",
-    "prepare": "husky install",
+    "postinstall": "husky install",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable",
     "pre-commit": "lint-staged"
   },
   "dependencies": {
@@ -29,6 +31,7 @@
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "lint-staged": "^12.3.7",
+    "pinst": "^3.0.0",
     "prettier": "^2.6.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.1.4",
