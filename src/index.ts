@@ -1,7 +1,13 @@
-import { InitParams, Item, Param } from './types';
-import { getDefaultInitParams, prepareItems, getBatches, sendBatches, resolveParam } from './helpers';
-import { getNow, getCache, setCache, retry } from './side-effects';
-import { BATCH_SIZE, RETRY, URL } from './consts';
+import { InitParams, Item, Param } from "./types";
+import {
+  getDefaultInitParams,
+  prepareItems,
+  getBatches,
+  sendBatches,
+  resolveParam,
+} from "./helpers";
+import { getNow, getCache, setCache, retry } from "./side-effects";
+import { BATCH_SIZE, RETRY, URL } from "./consts";
 
 export class Analytics {
   private trackId: Param<string>;
@@ -19,22 +25,32 @@ export class Analytics {
   constructor(trackId: string, params: InitParams = {}) {
     this.trackId = trackId;
     const initParams = { ...getDefaultInitParams(), ...params };
-    Object.keys(initParams).forEach(key => (this[key] = initParams[key]));
+    Object.keys(initParams).forEach((key) => (this[key] = initParams[key]));
     retry(this.send, RETRY);
   }
 
   public send = async (hitType?: string, additionalParams: object = {}) => {
     const now = getNow();
-    const params = hitType ? this.getParams(hitType, additionalParams, now) : null;
+    const params = hitType
+      ? this.getParams(hitType, additionalParams, now)
+      : null;
     const cache = getCache();
-    const items = prepareItems([ ...cache, params ].filter(_ => _), this.trackId, now);
+    const items = prepareItems(
+      [...cache, params].filter((_) => _),
+      this.trackId,
+      now
+    );
     if (items.length === 0) return;
     const batches = getBatches(items, BATCH_SIZE);
     const failedItems = await sendBatches(this.reportUrl || URL, batches);
     setCache(failedItems);
   };
 
-  private getParams(hitType: string, additionalParams = {}, time: number): Item {
+  private getParams(
+    hitType: string,
+    additionalParams = {},
+    time: number
+  ): Item {
     return {
       __timestamp: time,
       t: hitType,
@@ -48,7 +64,7 @@ export class Analytics {
       ua: resolveParam(this.userAgent),
       vp: resolveParam(this.viewport),
       sr: resolveParam(this.screenResolution),
-      ...additionalParams
+      ...additionalParams,
     };
   }
 }

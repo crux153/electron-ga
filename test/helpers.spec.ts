@@ -1,16 +1,16 @@
-import 'jest';
-import { URL } from '../src/consts';
+import "jest";
+import { URL } from "../src/consts";
 import {
   resolveParam,
   prepareItems,
   getBatches,
   prepareUserAgent,
   getDefaultInitParams,
-  sendBatches
-} from '../src/helpers';
+  sendBatches,
+} from "../src/helpers";
 
 jest.mock("@electron/remote", () => jest.fn());
-jest.mock('../src/side-effects');
+jest.mock("../src/side-effects");
 const {
   getClientId,
   getAppName,
@@ -19,134 +19,173 @@ const {
   getUserAgent,
   getViewport,
   getScreenResolution,
-  fetch
-} = require('../src/side-effects');
+  fetch,
+} = require("../src/side-effects");
 
-describe('helpers', () => {
-  describe('resolveParam', () => {
-    it('resolves the constant number value', () => {
+describe("helpers", () => {
+  describe("resolveParam", () => {
+    it("resolves the constant number value", () => {
       expect(resolveParam(10)).toEqual(10);
     });
 
-    it('resolves the constant string value', () => {
-      expect(resolveParam('aaa')).toEqual('aaa');
+    it("resolves the constant string value", () => {
+      expect(resolveParam("aaa")).toEqual("aaa");
     });
 
-    it('resolves the function return number value', () => {
+    it("resolves the function return number value", () => {
       expect(resolveParam(() => 10)).toEqual(10);
     });
 
-    it('resolves the function return string value', () => {
-      expect(resolveParam(() => 'aaa')).toEqual('aaa');
+    it("resolves the function return string value", () => {
+      expect(resolveParam(() => "aaa")).toEqual("aaa");
     });
   });
 
-  describe('prepareItems', () => {
-    it('extends items with qt property', () => {
+  describe("prepareItems", () => {
+    it("extends items with qt property", () => {
       expect(
-        prepareItems([ { a: 1, tid: 'abc', __timestamp: 10 }, { b: 2, tid: '123', __timestamp: 15 } ], '123', 20)
-      ).toEqual([ { a: 1, tid: '123', __timestamp: 10, qt: 10 }, { b: 2, tid: '123', __timestamp: 15, qt: 5 } ]);
+        prepareItems(
+          [
+            { a: 1, tid: "abc", __timestamp: 10 },
+            { b: 2, tid: "123", __timestamp: 15 },
+          ],
+          "123",
+          20
+        )
+      ).toEqual([
+        { a: 1, tid: "123", __timestamp: 10, qt: 10 },
+        { b: 2, tid: "123", __timestamp: 15, qt: 5 },
+      ]);
     });
   });
 
-  describe('getBatches', () => {
-    it('slices to one part below BATCH_SIZE', () => {
-      const items = [ { __timestamp: 1, tid: "1" }, { __timestamp: 2, tid: "2" }, { __timestamp: 3, tid: "3" } ];
-      expect(getBatches(items, 3)).toEqual([ items ]);
+  describe("getBatches", () => {
+    it("slices to one part below BATCH_SIZE", () => {
+      const items = [
+        { __timestamp: 1, tid: "1" },
+        { __timestamp: 2, tid: "2" },
+        { __timestamp: 3, tid: "3" },
+      ];
+      expect(getBatches(items, 3)).toEqual([items]);
     });
 
-    it('slices to one part above BATCH_SIZE', () => {
-      const items = [ { __timestamp: 1, tid: "1" }, { __timestamp: 2, tid: "2" }, { __timestamp: 3, tid: "3" } ];
-      expect(getBatches(items, 2)).toEqual([ [ { __timestamp: 1, tid: "1" }, { __timestamp: 2, tid: "2" } ], [ { __timestamp: 3, tid: "3" } ] ]);
+    it("slices to one part above BATCH_SIZE", () => {
+      const items = [
+        { __timestamp: 1, tid: "1" },
+        { __timestamp: 2, tid: "2" },
+        { __timestamp: 3, tid: "3" },
+      ];
+      expect(getBatches(items, 2)).toEqual([
+        [
+          { __timestamp: 1, tid: "1" },
+          { __timestamp: 2, tid: "2" },
+        ],
+        [{ __timestamp: 3, tid: "3" }],
+      ]);
     });
   });
 
-  describe('prepareUserAgent', () => {
-    it('removes Electron and appName from userAgent', () => {
+  describe("prepareUserAgent", () => {
+    it("removes Electron and appName from userAgent", () => {
       expect(
         prepareUserAgent(
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) abc-xyz.io/1.0.0 Chrome/58.0.3029.110 Electron/1.7.9 Safari/537.36',
-          'abc-xyz.io'
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) abc-xyz.io/1.0.0 Chrome/58.0.3029.110 Electron/1.7.9 Safari/537.36",
+          "abc-xyz.io"
         )
       ).toEqual(
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
       );
     });
   });
 
-  describe('getDefaultInitParams', () => {
-    getAppName.mockReturnValue('abc-xyz.io');
-    getClientId.mockReturnValue('123');
-    getAppVersion.mockReturnValue('1.0.0');
-    getLanguage.mockReturnValue('en-GB');
+  describe("getDefaultInitParams", () => {
+    getAppName.mockReturnValue("abc-xyz.io");
+    getClientId.mockReturnValue("123");
+    getAppVersion.mockReturnValue("1.0.0");
+    getLanguage.mockReturnValue("en-GB");
     getUserAgent.mockReturnValue(
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) abc-xyz.io/1.0.0 Chrome/58.0.3029.110 Electron/1.7.9 Safari/537.36'
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) abc-xyz.io/1.0.0 Chrome/58.0.3029.110 Electron/1.7.9 Safari/537.36"
     );
-    getViewport.mockReturnValue('100x100');
-    getScreenResolution.mockReturnValue('200x200');
+    getViewport.mockReturnValue("100x100");
+    getScreenResolution.mockReturnValue("200x200");
 
-    it('create init params', () => {
+    it("create init params", () => {
       const result = getDefaultInitParams();
       expect(result).toEqual({
-        protocolVersion: '1',
-        clientId: '123',
-        appName: 'abc-xyz.io',
-        appVersion: '1.0.0',
-        language: 'en-GB',
+        protocolVersion: "1",
+        clientId: "123",
+        appName: "abc-xyz.io",
+        appVersion: "1.0.0",
+        language: "en-GB",
         userAgent:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
         viewport: getViewport,
-        screenResolution: getScreenResolution
+        screenResolution: getScreenResolution,
       });
-      expect((<() => string>result.viewport)()).toEqual('100x100');
-      expect((<() => string>result.screenResolution)()).toEqual('200x200');
+      expect((<() => string>result.viewport)()).toEqual("100x100");
+      expect((<() => string>result.screenResolution)()).toEqual("200x200");
     });
   });
 
-  describe('sendBatches', () => {
-    it('does not do anything at empty batches', async () => {
+  describe("sendBatches", () => {
+    it("does not do anything at empty batches", async () => {
       expect(await sendBatches(URL, [])).toEqual([]);
       expect(fetch.mock.calls.length).toEqual(0);
     });
 
-    it('does not do anything at empty batch', async () => {
-      expect(await sendBatches(URL, [ [] ])).toEqual([]);
+    it("does not do anything at empty batch", async () => {
+      expect(await sendBatches(URL, [[]])).toEqual([]);
       expect(fetch.mock.calls.length).toEqual(0);
     });
 
-    it('send all batches', async () => {
+    it("send all batches", async () => {
       fetch.mockReturnValue(Promise.resolve());
       expect(
         await sendBatches(URL, [
-          [ { __timestamp: 1, tid: '123', a: 1 }, { __timestamp: 2, tid: '123', a: 2 } ],
-          [ { __timestamp: 3, tid: '123', a: 3 } ]
+          [
+            { __timestamp: 1, tid: "123", a: 1 },
+            { __timestamp: 2, tid: "123", a: 2 },
+          ],
+          [{ __timestamp: 3, tid: "123", a: 3 }],
         ])
       ).toEqual([]);
       expect(fetch.mock.calls[0][0]).toEqual(URL);
       expect(fetch.mock.calls[0][1]).toEqual({
-        method: 'post',
-        body: '__timestamp=1&tid=123&a=1\n__timestamp=2&tid=123&a=2'
+        method: "post",
+        body: "__timestamp=1&tid=123&a=1\n__timestamp=2&tid=123&a=2",
       });
       expect(fetch.mock.calls[1][0]).toEqual(URL);
-      expect(fetch.mock.calls[1][1]).toEqual({ method: 'post', body: '__timestamp=3&tid=123&a=3' });
+      expect(fetch.mock.calls[1][1]).toEqual({
+        method: "post",
+        body: "__timestamp=3&tid=123&a=3",
+      });
     });
 
-    it('collects failed items', async () => {
+    it("collects failed items", async () => {
       fetch.mockReturnValueOnce(Promise.reject(new Error()));
       fetch.mockReturnValueOnce(Promise.resolve());
       expect(
         await sendBatches(URL, [
-          [ { __timestamp: 1, tid: '123', a: 1 }, { __timestamp: 2, tid: '123', a: 2 } ],
-          [ { __timestamp: 3, tid: '123', a: 3 } ]
+          [
+            { __timestamp: 1, tid: "123", a: 1 },
+            { __timestamp: 2, tid: "123", a: 2 },
+          ],
+          [{ __timestamp: 3, tid: "123", a: 3 }],
         ])
-      ).toEqual([ { __timestamp: 1, tid: '123', a: 1 }, { __timestamp: 2, tid: '123', a: 2 } ]);
+      ).toEqual([
+        { __timestamp: 1, tid: "123", a: 1 },
+        { __timestamp: 2, tid: "123", a: 2 },
+      ]);
       expect(fetch.mock.calls[0][0]).toEqual(URL);
       expect(fetch.mock.calls[0][1]).toEqual({
-        method: 'post',
-        body: '__timestamp=1&tid=123&a=1\n__timestamp=2&tid=123&a=2'
+        method: "post",
+        body: "__timestamp=1&tid=123&a=1\n__timestamp=2&tid=123&a=2",
       });
       expect(fetch.mock.calls[1][0]).toEqual(URL);
-      expect(fetch.mock.calls[1][1]).toEqual({ method: 'post', body: '__timestamp=3&tid=123&a=3' });
+      expect(fetch.mock.calls[1][1]).toEqual({
+        method: "post",
+        body: "__timestamp=3&tid=123&a=3",
+      });
     });
   });
 });
